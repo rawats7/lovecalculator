@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LovePercentage Calculator</title>
+    <!-- Primary Meta Tags -->
+<meta name="title" content="LoveTester Pro – Find Your Life Partner Score">
+<meta name="description" content="Discover your true love accuracy! Answer 4 simple questions and let our advanced AI analyze your relationship.100% legit">
+
+<!-- Open Graph / Facebook / WhatsApp -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://yourdomain.com/index.html">
+<meta property="og:title" content="LoveCalculator Pro – Find Your Life Partner Score">
+<meta property="og:description" content="Are you and your crush meant to be? Advanced love calculation. Take the test now!">
+<meta property="og:image" content="https://yourdomain.com/preview-image.jpg">
+
+<!-- Twitter (optional) -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="LoveTester Pro">
+<meta name="twitter:description" content="Advanced love Calculation. Take the test now!">
+<meta name="twitter:image" content="https://yourdomain.com/preview-image.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+            background: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+        h1, h2, h3, .cambria {
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        }
+        #particleCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+        }
+        .site-header {
+            text-align: center;
+            margin-bottom: 20px;
+            z-index: 1;
+            animation: fadeInDown 1s ease;
+        }
+        .logo {
+            font-size: 3em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            color: #fff;
+            text-shadow: 0 0 30px #ff4d6d;
+            animation: logoPulse 2s infinite;
+        }
+        @keyframes logoPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .logo span {
+            background: linear-gradient(45deg, #ff4d6d, #ffb3c6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+        .logo i {
+            color: #ff4d6d;
+            text-shadow: 0 0 20px #ff4d6d;
+        }
+        .marquee {
+            width: 100%;
+            overflow: hidden;
+            background: rgba(255,77,109,0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 50px;
+            margin-top: 10px;
+            padding: 8px 0;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .marquee p {
+            display: inline-block;
+            white-space: nowrap;
+            animation: scrollMarquee 15s linear infinite;
+            color: #ffffffcc;
+            font-weight: bold;
+            font-size: 0.95em;
+            letter-spacing: 1px;
+        }
+        @keyframes scrollMarquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .main-card {
+            background: rgba(255,240,245,0.92);
+            backdrop-filter: blur(25px);
+            border-radius: 40px;
+            padding: 35px 30px;
+            width: 90%;
+            max-width: 500px;
+            min-height: 450px;            /* FIX: keeps card height when inputs hide */
+            overflow: hidden;             /* FIX: clips the loading overlay nicely */
+            box-shadow: 0 0 80px rgba(255,77,109,0.5), 0 30px 60px rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.6);
+            animation: float 4s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+            100% { transform: translateY(0); }
+        }
+        .main-card h2 {
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            font-size: 2em;
+            color: #d63384;
+            text-align: center;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 0 #fff0f5;
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .input-group i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ff4d6d;
+            font-size: 1.2em;
+        }
+        .input-group input {
+            font-family: 'Roboto', sans-serif;
+            width: 100%;
+            padding: 15px 20px 15px 55px;
+            border: 3px solid #ff85a2;
+            border-radius: 50px;
+            font-size: 1.1em;
+            outline: none;
+            background: #fff5f9;
+            transition: 0.3s;
+            text-align: left;
+        }
+        .input-group input:focus {
+            border-color: #d63384;
+            box-shadow: 0 0 25px #ff4d6d;
+        }
+        .btn {
+            width: 100%;
+            background: linear-gradient(45deg, #ff4d6d, #ff6b81);
+            color: white;
+            border: none;
+            padding: 16px 0;
+            font-size: 1.3em;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(255,77,109,0.6);
+            transition: 0.3s;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 30px rgba(255,77,109,0.8);
+        }
+        .btn:active { transform: scale(0.98); }
+
+        /* Loading overlay */
+        .loading-screen {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(25px);
+            border-radius: 40px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 10;
+        }
+        .loading-screen.active { display: flex; }
+        .server-icon {
+            font-size: 60px;
+            color: #ffd700;
+            animation: spin 2s linear infinite;
+            margin-bottom: 10px;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .progress-bar {
+            width: 80%;
+            height: 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 30px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00e676, #00bcd4);
+            border-radius: 30px;
+            box-shadow: 0 0 20px #00e676;
+            transition: width 0.2s;
+        }
+        .phase-text {
+            font-size: 1.4em;
+            font-weight: bold;
+            text-shadow: 0 0 15px #ff4d6d;
+            margin: 5px 0;
+            min-height: 30px;
+        }
+        .checklist {
+            width: 100%;
+            max-width: 400px;
+            text-align: left;
+            color: #ccc;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px 0;
+            opacity: 0.5;
+            transition: 0.3s;
+        }
+        .checklist-item.done {
+            opacity: 1;
+            color: #00e676;
+        }
+        .checklist-item i {
+            width: 20px;
+            text-align: center;
+        }
+        .fake-percentage {
+            font-size: 2em;
+            font-weight: 900;
+            color: #00e676;
+            margin-top: 10px;
+            min-height: 45px;
+        }
+        /* Scam result */
+        .scam-result {
+            display: none;
+            background: #fffbe6;
+            border: 6px dashed #f9a826;
+            border-radius: 30px;
+            padding: 25px 20px;
+            margin-top: 25px;
+            transform: rotate(-2deg);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            animation: pop 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+        }
+        @keyframes pop {
+            from { transform: scale(0) rotate(-30deg); opacity: 0; }
+            to { transform: scale(1) rotate(-2deg); opacity: 1; }
+        }
+        .scam-icon {
+            font-size: 110px;
+            color: #e63946;
+            animation: bounceSticker 0.6s infinite alternate;
+        }
+        @keyframes bounceSticker {
+            from { transform: translateY(0); }
+            to { transform: translateY(-15px); }
+        }
+        .scam-text {
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            font-size: 2.5em;
+            font-weight: 900;
+            color: #e63946;
+            text-shadow: 3px 3px 0 #fff;
+            margin: 10px 0;
+        }
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .share-btn {
+            background: #25D366;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(37,211,102,0.4);
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .share-btn:hover { background: #128C7E; transform: scale(1.05); }
+        .copy-msg { color: #2d6a4f; margin-top: 8px; display: none; font-weight: bold; }
+        .site-footer {
+            margin-top: 30px;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9em;
+            text-align: center;
+            z-index: 1;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particleCanvas"></canvas>
+
+    <header class="site-header">
+        <div class="logo">
+            <i class="fas fa-heart"></i>
+            <span>LOVE CALCULATOR</span>
+            <i class="fas fa-heart"></i>
+        </div>
+        <div class="marquee">
+            <p>100% Accurate Love Test • Trusted by 10000+ users • love calculator  • AI‑powered analysis </p>
+        </div>
+    </header>
+
+    <main class="main-card" id="mainCard">
+        <h2><i class="fas fa-magic"></i>Love Calculator <i class="fas fa-magic"></i></h2>
+
+        <!-- 4 Input Boxes -->
+        <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input type="text" id="yourName" placeholder="Your Name" autocomplete="off">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-heart"></i>
+            <input type="text" id="crushName" placeholder="Crush's Name" autocomplete="off">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-birthday-cake"></i>
+            <input type="number" id="yourAge" placeholder="Your Age" min="10" max="99">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-birthday-cake"></i>
+            <input type="number" id="crushAge" placeholder="Crush's Age" min="10" max="99">
+        </div>
+
+        <button class="btn" id="calculateBtn"><i class="fas fa-heartbeat"></i> Calculate Love</button>
+
+        <!-- Loading Overlay (Fake Server Analysis) -->
+        <div class="loading-screen" id="loadingScreen">
+            <div class="server-icon"><i class="fas fa-server"></i></div>
+            <div class="phase-text" id="phaseText">Connecting to server...</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="checklist" id="checklist">
+                <div class="checklist-item" data-id="1"><i class="far fa-circle"></i> Initializing connection</div>
+                <div class="checklist-item" data-id="2"><i class="far fa-circle"></i> Fetching api</div>
+                <div class="checklist-item" data-id="3"><i class="far fa-circle"></i> Analyzing birth charts</div>
+                <div class="checklist-item" data-id="4"><i class="far fa-circle"></i> Calculating compatibility matrix</div>
+                <div class="checklist-item" data-id="5"><i class="far fa-circle"></i> Checking past life connections</div>
+                <div class="checklist-item" data-id="6"><i class="far fa-circle"></i> Syncing with web</div>
+            </div>
+            <div class="fake-percentage" id="fakePercentage">0%</div>
+        </div>
+
+        <!-- Scam Result Sticker -->
+        <div class="scam-result" id="scamResult">
+            <div class="scam-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="scam-text">YOU GOT SCAMMED!</div>
+            <p style="font-size:1.2em; font-weight:bold; margin:5px 0;" id="displayNames"></p>
+            <p style="margin-bottom:10px;">
+                Your details have been sent to <strong>Admin</strong>.<br>
+                <em>He won't contact you <i class="fas fa-grin-tongue-wink"></i></em>
+            </p>
+            <div class="share-buttons">
+                <button class="share-btn" id="scamOthersBtn"><i class="fas fa-copy"></i> Copy Link</button>
+                <button class="share-btn" id="whatsappShareBtn"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+            </div>
+            <p class="copy-msg" id="copyMsg">Link copied! Go scam friends <i class="fas fa-laugh-wink"></i></p>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p><i class="far fa-copyright"></i> 2024 Love caluculator | Your data is safe with us <i class="fas fa-shield-alt"></i></p>
+        <p style="font-size:0.8em;">Made with <i class="fas fa-heart-broken"></i>  Love</p>
+    </footer>
+
+    <!-- Supabase Module Import – NO MORE "supabase not defined" -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+        // ========== SUPABASE CONFIGURATION ==========
+        const SUPABASE_URL = 'https://qtimngonyrzmalkdxzqb.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0aW1uZ29ueXJ6bWFsa2R4enFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2Nzg5NzEsImV4cCI6MjA5NzI1NDk3MX0.qCnu97ZyWiQAtIjdKXQOB7AS2WnzzZpKjnqC9CLQCkc'
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+        // ========== PARTICLE SYSTEM ==========
+        const canvas = document.getElementById('particleCanvas')
+        const ctx = canvas.getContext('2d')
+        let particles = []
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth
+            canvas.height = window.innerHeight
+        }
+        window.addEventListener('resize', resizeCanvas)
+        resizeCanvas()
+
+        function drawHeart(ctx, x, y, size, color) {
+            ctx.save()
+            ctx.translate(x, y)
+            ctx.scale(size, size)
+            ctx.beginPath()
+            ctx.moveTo(0, -0.4)
+            ctx.bezierCurveTo(-0.4, -1.2, -1.6, -0.4, 0, 1.2)
+            ctx.bezierCurveTo(1.6, -0.4, 0.4, -1.2, 0, -0.4)
+            ctx.fillStyle = color
+            ctx.fill()
+            ctx.restore()
+        }
+
+        function createParticle() {
+            return {
+                x: Math.random() * canvas.width,
+                y: canvas.height + 20,
+                size: Math.random() * 0.8 + 0.3,
+                speedY: Math.random() * 1.5 + 0.5,
+                color: `hsla(${Math.floor(Math.random() * 20 + 340)}, 100%, 70%, ${Math.random() * 0.6 + 0.4})`
+            }
+        }
+
+        function initParticles(count = 60) {
+            particles = []
+            for (let i = 0; i < count; i++) particles.push(createParticle())
+        }
+        initParticles()
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            particles.forEach(p => {
+                p.y -= p.speedY
+                if (p.y < -50) {
+                    Object.assign(p, createParticle())
+                    p.y = canvas.height + 20
+                }
+                drawHeart(ctx, p.x, p.y, p.size, p.color)
+            })
+            requestAnimationFrame(animateParticles)
+        }
+        animateParticles()
+
+        // ========== FAKE ANALYSIS SEQUENCE ==========
+        const phases = [
+            { text: 'Connecting to server...', percentage: 10 },
+            { text: 'Fetching love database...', percentage: 25 },
+            { text: 'Analyzing birth charts...', percentage: 40 },
+            { text: 'Calculating compatibility matrix...', percentage: 60 },
+            { text: 'Checking past life connections...', percentage: 75 },
+            { text: 'Syncing with Richard Carter...', percentage: 90 },
+            { text: 'Finalizing result...', percentage: 100 }
+        ]
+
+        const checklistItems = document.querySelectorAll('.checklist-item')
+        const phaseText = document.getElementById('phaseText')
+        const progressFill = document.getElementById('progressFill')
+        const fakePercentage = document.getElementById('fakePercentage')
+
+        function runLoadingSequence(callback) {
+            let currentPhase = 0
+            let currentProgress = 0
+            const totalDuration = 7000
+            const updateInterval = 50
+            const steps = totalDuration / updateInterval
+
+            const timer = setInterval(() => {
+                currentProgress += (100 / steps)
+                if (currentProgress > 100) currentProgress = 100
+                progressFill.style.width = currentProgress + '%'
+                fakePercentage.textContent = Math.floor(currentProgress) + '%'
+
+                for (let i = phases.length - 1; i >= 0; i--) {
+                    if (currentProgress >= phases[i].percentage) {
+                        if (i !== currentPhase) {
+                            currentPhase = i
+                            phaseText.textContent = phases[i].text
+                            checklistItems.forEach((item, index) => {
+                                if (index <= i) {
+                                    item.classList.add('done')
+                                    item.querySelector('i').className = 'fas fa-check-circle'
+                                } else {
+                                    item.classList.remove('done')
+                                    item.querySelector('i').className = 'far fa-circle'
+                                }
+                            })
+                        }
+                        break
+                    }
+                }
+
+                if (currentProgress >= 100) {
+                    clearInterval(timer)
+                    fakePercentage.textContent = '0%'
+                    phaseText.textContent = 'LOVE ACCURACY: 0%'
+                    checklistItems.forEach(item => {
+                        item.classList.add('done')
+                        item.querySelector('i').className = 'fas fa-check-circle'
+                    })
+                    setTimeout(callback, 600)
+                }
+            }, updateInterval)
+        }
+
+        // ========== CALCULATE BUTTON ==========
+        const calculateBtn = document.getElementById('calculateBtn')
+        const loadingScreen = document.getElementById('loadingScreen')
+        const scamResult = document.getElementById('scamResult')
+        const displayNames = document.getElementById('displayNames')
+
+        calculateBtn.addEventListener('click', async () => {
+            const yourName = document.getElementById('yourName').value.trim()
+            const crushName = document.getElementById('crushName').value.trim()
+            const yourAge = document.getElementById('yourAge').value.trim()
+            const crushAge = document.getElementById('crushAge').value.trim()
+
+            if (!yourName || !crushName || !yourAge || !crushAge) {
+                alert('Please fill all four boxes!')
+                return
+            }
+            if (yourAge < 10 || crushAge < 10 || yourAge > 99 || crushAge > 99) {
+                alert('Age must be between 10 and 99')
+                return
+            }
+
+            // Save to Supabase
+            try {
+                await supabaseClient.from('leads').insert([
+                    {
+                        your_name: yourName,
+                        crush_name: crushName,
+                        your_age: parseInt(yourAge),
+                        crush_age: parseInt(crushAge)
+                    }
+                ])
+            } catch (err) {
+                console.error('Supabase error:', err)
+                // proceed even if save fails
+            }
+
+            // Hide inputs & button, show loading
+            document.querySelector('.btn').style.display = 'none'
+            document.querySelectorAll('.input-group').forEach(el => el.style.display = 'none')
+            document.querySelector('.main-card h2').style.display = 'none'
+
+            // Reset checklist & progress
+            checklistItems.forEach(item => {
+                item.classList.remove('done')
+                item.querySelector('i').className = 'far fa-circle'
+            })
+            progressFill.style.width = '0%'
+            fakePercentage.textContent = '0%'
+            phaseText.textContent = 'Connecting to server...'
+
+            loadingScreen.classList.add('active')
+
+            runLoadingSequence(() => {
+                loadingScreen.classList.remove('active')
+                document.querySelector('.main-card h2').style.display = ''
+                displayNames.textContent = `${yourName} ❤️ ${crushName} (${yourAge} & ${crushAge})`
+                scamResult.style.display = 'block'
+                // Burst particles
+                for (let i = 0; i < 30; i++) {
+                    particles.push({
+                        x: canvas.width / 2,
+                        y: canvas.height / 2,
+                        size: Math.random() * 1.2 + 0.5,
+                        speedY: (Math.random() - 0.5) * 4,
+                        color: `hsl(${Math.random() * 360}, 100%, 70%)`
+                    })
+                }
+                document.getElementById('mainCard').style.animation = 'none'
+                document.getElementById('mainCard').offsetHeight
+                document.getElementById('mainCard').style.animation = 'shake 0.5s'
+            })
+        })
+
+        // ========== SHARE BUTTONS ==========
+        document.getElementById('scamOthersBtn').addEventListener('click', () => {
+            const url = window.location.href
+            navigator.clipboard.writeText(url).then(() => {
+                document.getElementById('copyMsg').style.display = 'block'
+                setTimeout(() => document.getElementById('copyMsg').style.display = 'none', 3000)
+            }).catch(() => alert('Copy this link: ' + url))
+        })
+
+        document.getElementById('whatsappShareBtn').addEventListener('click', () => {
+            const url = encodeURIComponent(window.location.href)
+            const text = encodeURIComponent("How Strong Is Your Love? Check the Percentage Now:")
+            window.open(`https://wa.me/?text=${text}%20${url}`, '_blank')
+        })
+    </script>
+</body>
+</html>

